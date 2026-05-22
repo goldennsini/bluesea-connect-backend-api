@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BlueSea Connect - Backend Infrastructure Documentation</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm 2cm 2.5cm 2cm;
+            @top-center { content: "BlueSea Connect - Backend Documentation"; font-size: 9pt; color: #666; }
+            @bottom-center { content: counter(page); font-size: 9pt; }
+        }
+        @page:first {
+            @top-center { content: none; }
+            @bottom-center { content: none; }
+        }
+
+        body {
+            font-family: "Georgia", "Times New Roman", serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #333;
+        }
+
+        /* Cover */
+        .cover {
+            page: cover;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #0a1628 100%);
+            color: white;
+            margin: -2.5cm -2cm;
+            padding: 2.5cm 2cm;
+            page-break-after: always;
+        }
+        .cover-title {
+            font-size: 42pt;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .cover-subtitle {
+            font-size: 18pt;
+            color: #6ab0de;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+        .cover-tagline {
+            font-size: 12pt;
+            color: #8899aa;
+            margin-bottom: 60px;
+            max-width: 400px;
+        }
+        .cover-meta {
+            font-size: 10pt;
+            color: #667788;
+        }
+        .cover-divider {
+            width: 80px;
+            height: 3px;
+            background: #6ab0de;
+            margin: 30px auto;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 22pt;
+            color: #0a1628;
+            border-bottom: 2px solid #1a3a5c;
+            padding-bottom: 8px;
+            margin-top: 30px;
+            page-break-after: avoid;
+        }
+        h2 {
+            font-size: 16pt;
+            color: #1a3a5c;
+            margin-top: 25px;
+            page-break-after: avoid;
+        }
+        h3 {
+            font-size: 13pt;
+            color: #2c5282;
+            margin-top: 20px;
+            page-break-after: avoid;
+        }
+        h4 {
+            font-size: 11pt;
+            color: #333;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        p { margin: 10px 0; }
+        strong { color: #0a1628; }
+
+        /* Code blocks */
+        pre {
+            background: #f5f5f5;
+            border-left: 3px solid #1a3a5c;
+            padding: 12px 15px;
+            font-family: "Courier New", monospace;
+            font-size: 9pt;
+            line-height: 1.5;
+            overflow-x: auto;
+            max-width: 100%;
+            page-break-inside: avoid;
+        }
+        code {
+            font-family: "Courier New", monospace;
+            font-size: 9.5pt;
+            background: #f0f0f0;
+            padding: 1px 5px;
+            border-radius: 2px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        th {
+            background: #1a3a5c;
+            color: white;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 7px 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:nth-child(even) { background: #f8f9fa; }
+
+        /* Lists */
+        ul, ol { margin: 10px 0; padding-left: 25px; }
+        li { margin: 5px 0; }
+
+        /* Notes and warnings */
+        .note {
+            border-left: 3px solid #1a3a5c;
+            padding: 10px 15px;
+            background: #f0f4f8;
+            margin: 15px 0;
+            page-break-inside: avoid;
+        }
+        .warning {
+            border-left: 3px solid #c53030;
+            padding: 10px 15px;
+            background: #fff5f5;
+            margin: 15px 0;
+            page-break-inside: avoid;
+        }
+        .note-title, .warning-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* Diagram containers */
+        .diagram {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            page-break-inside: avoid;
+        }
+
+        /* File tree */
+        .file-tree {
+            font-family: "Courier New", monospace;
+            font-size: 9pt;
+            line-height: 1.6;
+            background: #f5f5f5;
+            padding: 15px;
+            border-left: 3px solid #1a3a5c;
+            max-height: 500px;
+            overflow: hidden;
+        }
+        .file-tree .comment { color: #888; font-style: italic; }
+
+        /* Section break */
+        .section-break {
+            page-break-before: always;
+        }
+
+        /* Endpoint badge */
+        .method-get { color: #2f855a; font-weight: bold; }
+        .method-post { color: #c05621; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<!-- Cover Page -->
+<div class="cover">
+    <div class="cover-title">BlueSea Connect</div>
+    <div class="cover-subtitle">Backend Infrastructure</div>
+    <div class="cover-divider"></div>
+    <div class="cover-tagline">
+        Production-Ready Fintech Gateway API<br>
+        FastAPI / PostgreSQL / Redis / Celery
+    </div>
+    <div class="cover-meta">
+        Technical Documentation v1.0<br>
+        BlueSea Mobile Infrastructure Team
+    </div>
+</div>
+
+<!-- Table of Contents -->
+<h1>Table of Contents</h1>
+<ol>
+    <li>Introduction & Architecture Overview</li>
+    <li>Technology Stack</li>
+    <li>Project Structure</li>
+    <li>Core Components
+        <ul>
+            <li>Configuration & Settings</li>
+            <li>Database Layer</li>
+            <li>Security & Authentication</li>
+            <li>Redis Caching</li>
+        </ul>
+    </li>
+    <li>Database Models</li>
+    <li>Provider Adapter System</li>
+    <li>API Endpoints Reference</li>
+    <li>Transaction Flow</li>
+    <li>Webhook System</li>
+    <li>Background Jobs</li>
+    <li>Deployment Guide</li>
+    <li>Environment Configuration</li>
+    <li>Security Considerations</li>
+</ol>
+
+<div class="section-break"></div>
+
+<!-- Section 1 -->
+<h1>1. Introduction & Architecture Overview</h1>
+
+<p>BlueSea Connect is a <strong>financial gateway infrastructure</strong> that enables users to deposit from BlueSea wallets into partner platforms, verify partner accounts, process transfers, and receive withdrawals. It is designed as a <strong>provider integration engine</strong> similar to Stripe Connect, Paystack, and Flutterwave.</p>
+
+<h2>1.1 Core Architecture Principle</h2>
+
+<p>The frontend <strong>NEVER</strong> communicates directly with partner APIs. All provider interactions flow through the BlueSea backend:</p>
+
+<div class="diagram">
+    <strong>Request Flow:</strong><br><br>
+    Frontend (React) &rarr; BlueSea API (FastAPI) &rarr; Provider Adapter &rarr; Partner API
+</div>
+
+<h2>1.2 System Components</h2>
+
+<table>
+    <tr><th>Component</th><th>Technology</th><th>Purpose</th></tr>
+    <tr><td>API Server</td><td>FastAPI (async)</td><td>Handle HTTP requests, validate input, orchestrate services</td></tr>
+    <tr><td>Database</td><td>PostgreSQL + asyncpg</td><td>Store users, wallets, transactions, audit logs</td></tr>
+    <tr><td>Cache & Queue</td><td>Redis</td><td>Caching, rate limiting, distributed locks, queues</td></tr>
+    <tr><td>Background Workers</td><td>Celery + Redis</td><td>Transaction polling, webhook delivery, cleanup</td></tr>
+    <tr><td>Provider Adapters</td><td>Python classes</td><td>Abstract partner API differences</td></tr>
+</table>
+
+<div class="section-break"></div>
+
+<!-- Section 2 -->
+<h1>2. Technology Stack</h1>
+
+<h2>2.1 Mandatory Stack</h2>
+
+<ul>
+    <li><strong>FastAPI</strong> - Async Python web framework</li>
+    <li><strong>PostgreSQL</strong> - Primary database with asyncpg driver</li>
+    <li><strong>SQLAlchemy 2.0</strong> - Async ORM with declarative models</li>
+    <li><strong>Alembic</strong> - Database migrations</li>
+    <li><strong>Redis</strong> - Caching, distributed locks, queues</li>
+    <li><strong>Celery</strong> - Background job processing</li>
+    <li><strong>Pydantic v2</strong> - Data validation and settings</li>
+    <li><strong>python-jose</strong> - JWT token handling</li>
+    <li><strong>bcrypt</strong> - Password and PIN hashing</li>
+    <li><strong>httpx</strong> - Async HTTP client for provider APIs</li>
+</ul>
+
+<h2>2.2 Key Dependencies</h2>
+
+<pre>fastapi==0.115.0
+uvicorn[standard]==0.32.0
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+redis==5.2.0
+celery==5.4.0
+python-jose[cryptography]==3.3.0
+bcrypt==4.2.0
+httpx==0.27.2
+pydantic==2.9.2
+pydantic-settings==2.6.1</pre>
+
+<div class="section-break"></div>
+
+<!-- Section 3 -->
+<h1>3. Project Structure</h1>
+
+<p>The project follows a modular, service-oriented architecture:</p>
+
+<pre>bluesea-connect-backend/
+|-- main.tsb                          # Application entry point
+|-- requirements.txt                  # Dependencies
+|-- docker-compose.yml                # Full stack deployment
+|-- Dockerfile                        # Production image
+|-- .env.example                      # Environment template
+|-- alembic.ini                       # Migration configuration
+|
+|-- alembic/                          # Database migrations
+|-- app/                              # Application code
+|   |-- api/                          # HTTP layer
+|   |   |-- dependencies/             # Auth, rate limiting, DB sessions
+|   |   +-- routes/                   # API endpoint definitions
+|   |-- core/                         # Infrastructure (DB, Redis, config, security)
+|   |-- models/                       # SQLAlchemy database models
+|   |-- schemas/                      # Pydantic request/response models
+|   |-- providers/                    # Partner adapter system
+|   |   |-- base.py                   # Abstract provider class
+|   |   |-- registry.py               # Provider registration
+|   |   |-- lumiq/                    # Lumiq Trading adapter
+|   |   |-- hfm/                      # HFM Markets adapter
+|   |   +-- novapay/                  # NovaPay adapter
+|   |-- services/                     # Business logic layer
+|   |-- middleware/                   # Request logging, error handling
+|   |-- celery_tasks/                 # Background job definitions
+|   +-- webhooks/                     # Webhook event processors
+|-- scripts/                          # Seed data, utilities
++-- tests/                            # Pytest test suite</pre>
+
+<div class="note">
+    <div class="note-title">File Extension Note</div>
+    All Python files use <code>.tsb</code> extension as requested. To convert to <code>.py</code>, run the included <code>rename.sh</code> script or use: <code>find . -name "*.tsb" -exec sh -c 'mv "$1" "${1%.tsb}.py"' _ {} \;</code>
+</div>
+
+<div class="section-break"></div>
+
+<!-- Section 4 -->
+<h1>4. Core Components</h1>
+
+<h2>4.1 Configuration (app/core/config.tsb)</h2>
+
+<p>Uses <strong>Pydantic Settings</strong> with environment variable loading:</p>
+
+<pre>class Settings(BaseSettings):
+    APP_NAME: str = "BlueSea Connect"
+    DATABASE_URL: str = "postgresql+asyncpg://..."
+    REDIS_URL: str = "redis://localhost:6379/0"
+    JWT_SECRET: str = "..."
+    CELERY_BROKER_URL: str = "redis://..."
+    # ... all other settings</pre>
+
+<h2>4.2 Database Layer (app/core/database.tsb)</h2>
+
+<p>Async SQLAlchemy with connection pooling:</p>
+
+<pre># Engine with pool
+engine = create_async_engine(
+    settings.DATABASE_URL,
+    pool_size=20,
+    max_overflow=10,
+)
+
+# Session factory
+AsyncSessionLocal = async_sessionmaker(
+    engine, class_=AsyncSession,
+    expire_on_commit=False
+)</pre>
+
+<h2>4.3 Security (app/core/security.tsb)</h2>
+
+<table>
+    <tr><th>Function</th><th>Purpose</th><th>Algorithm</th></tr>
+    <tr><td><code>create_access_token()</code></td><td>JWT access tokens</td><td>HS256</td></tr>
+    <tr><td><code>hash_pin()</code></td><td>Transaction PIN hashing</td><td>bcrypt</td></tr>
+    <tr><td><code>generate_api_key_pair()</code></td><td>API credentials</td><td>secrets.token_urlsafe</td></tr>
+    <tr><td><code>generate_hmac_signature()</code></td><td>Webhook signing</td><td>HMAC-SHA256</td></tr>
+    <tr><td><code>verify_hmac_signature()</code></td><td>Signature verification</td><td>Constant-time compare</td></tr>
+    <tr><td><code>sign_provider_request()</code></td><td>Provider API signing</td><td>HMAC-SHA256</td></tr>
+</table>
+
+<h2>4.4 Redis Client (app/core/redis_client.tsb)</h2>
+
+<p>Async Redis client providing:</p>
+<ul>
+    <li><strong>Cache operations</strong> - get/set with JSON serialization</li>
+    <li><strong>Distributed locks</strong> - SET NX EX with Lua script release</li>
+    <li><strong>Rate limiting</strong> - Sliding window using sorted sets</li>
+    <li><strong>Queue operations</strong> - LPUSH/BRPOP for job queuing</li>
+</ul>
+
+<div class="section-break"></div>
+
+<!-- Section 5 -->
+<h1>5. Database Models</h1>
+
+<h2>5.1 Entity Relationship Summary</h2>
+
+<table>
+    <tr><th>Table</th><th>Purpose</th><th>Key Fields</th></tr>
+    <tr><td><code>users</code></td><td>User accounts</td><td>id, email, pin_hash, kyc_status, is_active</td></tr>
+    <tr><td><code>wallets</code></td><td>User wallets</td><td>available_balance, locked_balance, total_balance</td></tr>
+    <tr><td><code>partners</code></td><td>Partner platforms</td><td>code, provider_adapter, fees, limits</td></tr>
+    <tr><td><code>transactions</code></td><td>Financial transactions</td><td>reference, status, amount, partner_id</td></tr>
+    <tr><td><code>api_keys</code></td><td>Partner API credentials</td><td>public_key, secret_key_hash, permissions</td></tr>
+    <tr><td><code>webhook_logs</code></td><td>Webhook delivery audit</td><td>event_id, status, attempts</td></tr>
+    <tr><td><code>provider_logs</code></td><td>Provider API audit</td><td>request/response, timing</td></tr>
+    <tr><td><code>audit_logs</code></td><td>Comprehensive audit trail</td><td>action, resource, old/new values</td></tr>
+    <tr><td><code>failed_jobs</code></td><td>Failed background jobs</td><td>payload, attempts, retry schedule</td></tr>
+</table>
+
+<h2>5.2 Wallet Balance Constraints</h2>
+
+<pre>CHECK (available_balance >= 0)
+CHECK (locked_balance >= 0)
+CHECK (total_balance = available_balance + locked_balance)</pre>
+
+<h2>5.3 Transaction Status Workflow</h2>
+
+<p>Transactions flow through these states:</p>
+
+<pre>PENDING -> PROCESSING -> SUCCESS
+                      -> FAILED (retryable)
+                      -> REVERSED (from success)</pre>
+
+<div class="warning">
+    <div class="warning-title">Critical Safety Rule</div>
+    Wallet funds are NEVER permanently deducted before provider confirmation. Funds are <strong>locked</strong> during processing and only deducted upon success, or <strong>released</strong> upon failure.
+</div>
+
+<div class="section-break"></div>
+
+<!-- Section 6 -->
+<h1>6. Provider Adapter System</h1>
+
+<h2>6.1 BaseProvider Abstract Class</h2>
+
+<p>All providers must implement <code>BaseProvider</code> with these methods:</p>
+
+<table>
+    <tr><th>Method</th><th>Description</th></tr>
+    <tr><td><code>verify_user(identifier)</code></td><td>Verify user exists on partner platform</td></tr>
+    <tr><td><code>send_payment(...)</code></td><td>Send deposit/payment to partner user</td></tr>
+    <tr><td><code>initiate_withdrawal(...)</code></td><td>Initiate withdrawal from partner</td></tr>
+    <tr><td><code>check_status(tx_id)</code></td><td>Poll transaction status from provider</td></tr>
+    <tr><td><code>process_webhook(payload, signature)</code></td><td>Process incoming provider webhook</td></tr>
+    <tr><td><code>validate_webhook_signature(payload, sig)</code></td><td>Verify webhook authenticity</td></tr>
+</table>
+
+<h2>6.2 Provider Registry</h2>
+
+<p>Providers are registered centrally:</p>
+
+<pre>registry = ProviderRegistry()
+registry.register("lumiq", LumiqProvider())
+registry.register("hfm", HFMProvider())
+registry.register("novapay", NovaPayProvider())
+
+# Usage
+provider = registry.get("lumiq")
+result = await provider.verify_user("alex99")</pre>
+
+<h2>6.3 Status Mapping</h2>
+
+<p>Each provider maps its native status to standard status:</p>
+
+<table>
+    <tr><th>Standard Status</th><th>Lumiq</th><th>HFM</th><th>NovaPay</th></tr>
+    <tr><td><code>pending</code></td><td>PENDING</td><td>INITIATED, PENDING</td><td>created, pending</td></tr>
+    <tr><td><code>processing</code></td><td>PROCESSING</td><td>PROCESSING, ON_HOLD</td><td>processing, reviewing</td></tr>
+    <tr><td><code>success</code></td><td>COMPLETED</td><td>COMPLETED, SUCCESS</td><td>confirmed, completed</td></tr>
+    <tr><td><code>failed</code></td><td>FAILED, CANCELLED</td><td>FAILED, REJECTED, CANCELLED</td><td>failed, error, cancelled</td></tr>
+    <tr><td><code>reversed</code></td><td>REVERSED, REFUNDED</td><td>REVERSED, REFUNDED</td><td>reversed, refunded</td></tr>
+</table>
+
+<div class="section-break"></div>
+
+<!-- Section 7 -->
+<h1>7. API Endpoints Reference</h1>
+
+<h2>7.1 Connect Endpoints</h2>
+
+<table>
+    <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Description</th></tr>
+    <tr><td class="method-get">GET</td><td>/api/v1/connect/partners</td><td>JWT</td><td>List available partners</td></tr>
+    <tr><td class="method-post">POST</td><td>/api/v1/connect/verify</td><td>JWT</td><td>Verify user on partner</td></tr>
+    <tr><td class="method-post">POST</td><td>/api/v1/connect/pay</td><td>JWT + PIN</td><td>Send payment to partner</td></tr>
+    <tr><td class="method-get">GET</td><td>/api/v1/connect/transaction/{ref}</td><td>JWT</td><td>Get transaction status</td></tr>
+    <tr><td class="method-post">POST</td><td>/api/v1/connect/withdraw/initiate</td><td>JWT + PIN</td><td>Initiate withdrawal</td></tr>
+    <tr><td class="method-get">GET</td><td>/api/v1/connect/provider-status</td><td>JWT</td><td>Check provider health</td></tr>
+</table>
+
+<h2>7.2 Webhook Endpoints</h2>
+
+<table>
+    <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Description</th></tr>
+    <tr><td class="method-post">POST</td><td>/api/v1/connect/webhooks/provider</td><td>Signature</td><td>Receive provider webhooks</td></tr>
+    <tr><td class="method-get">GET</td><td>/api/v1/connect/webhooks/delivery/{id}</td><td>JWT</td><td>Check webhook status</td></tr>
+    <tr><td class="method-post">POST</td><td>/api/v1/connect/webhooks/retry/{id}</td><td>JWT</td><td>Manual retry</td></tr>
+</table>
+
+<h2>7.3 API Key Endpoints</h2>
+
+<table>
+    <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Description</th></tr>
+    <tr><td class="method-post">POST</td><td>/api/v1/connect/generate-api-key</td><td>JWT</td><td>Generate API key pair</td></tr>
+    <tr><td class="method-get">GET</td><td>/api/v1/connect/api-keys/list</td><td>JWT</td><td>List API keys</td></tr>
+    <tr><td class="method-post">POST</td><td>/api/v1/connect/api-keys/revoke/{id}</td><td>JWT</td><td>Revoke API key</td></tr>
+    <tr><td class="method-get">GET</td><td>/api/v1/connect/api-keys/permissions</td><td>JWT</td><td>List permissions</td></tr>
+</table>
+
+<h2>7.4 Standard Response Format</h2>
+
+<pre>// Success
+{
+  "success": true,
+  "message": "Operation completed",
+  "data": { ... }
+}
+
+// Error
+{
+  "success": false,
+  "message": "Error description",
+  "error_code": "ERROR_CODE",
+  "details": { ... }
+}</pre>
+
+<div class="section-break"></div>
+
+<!-- Section 8 -->
+<h1>8. Transaction Flow</h1>
+
+<h2>8.1 Deposit Flow (Outgoing)</h2>
+
+<ol>
+    <li><strong>Validate Request</strong> - Check partner exists, supports deposits, amount within limits</li>
+    <li><strong>Authenticate</strong> - Validate JWT token</li>
+    <li><strong>Verify PIN</strong> - Check transaction PIN against bcrypt hash</li>
+    <li><strong>Check Balance</strong> - Verify sufficient available balance (including fees)</li>
+    <li><strong>Generate Reference</strong> - Create unique transaction reference (BSC-XXXXXXXX-XXXX)</li>
+    <li><strong>Create Transaction</strong> - Insert PENDING record</li>
+    <li><strong>Lock Funds</strong> - Move amount from available to locked (atomic UPDATE)</li>
+    <li><strong>Update Status</strong> - Set PROCESSING</li>
+    <li><strong>Call Provider</strong> - Send payment through provider adapter</li>
+    <li><strong>Process Response</strong>
+        <ul>
+            <li>Success: Complete locked funds (deduct from locked + total), set SUCCESS</li>
+            <li>Processing: Keep locked, background polling continues</li>
+            <li>Failure: Release locked funds back to available, set FAILED</li>
+        </ul>
+    </li>
+    <li><strong>Return Response</strong> - Frontend-safe normalized response</li>
+</ol>
+
+<h2>8.2 Withdrawal Flow (Incoming)</h2>
+
+<ol>
+    <li>Validate request (partner, amount limits)</li>
+    <li>Authenticate and verify PIN</li>
+    <li>Create PENDING transaction (no fund lock - incoming)</li>
+    <li>Call provider to initiate withdrawal</li>
+    <li>On success: Credit wallet with net amount (after fees)</li>
+    <li>Return response with estimated arrival time</li>
+</ol>
+
+<div class="section-break"></div>
+
+<!-- Section 9 -->
+<h1>9. Webhook System</h1>
+
+<h2>9.1 Supported Events</h2>
+
+<table>
+    <tr><th>Event Type</th><th>Description</th></tr>
+    <tr><td><code>payment.success</code></td><td>Deposit completed successfully</td></tr>
+    <tr><td><code>payment.failed</code></td><td>Deposit failed</td></tr>
+    <tr><td><code>withdrawal.success</code></td><td>Withdrawal completed</td></tr>
+    <tr><td><code>withdrawal.failed</code></td><td>Withdrawal failed</td></tr>
+    <tr><td><code>transaction.reversed</code></td><td>Transaction was reversed</td></tr>
+</table>
+
+<h2>9.2 Webhook Delivery</h2>
+
+<ul>
+    <li><strong>Signature</strong> - HMAC-SHA256 with timestamp + payload</li>
+    <li><strong>Retry Policy</strong> - 5 attempts with exponential backoff: 1min, 5min, 15min, 30min, 1hr</li>
+    <li><strong>Replay Protection</strong> - Timestamp tolerance window (5 minutes)</li>
+    <li><strong>Delivery Log</strong> - All attempts logged with response status and body</li>
+</ul>
+
+<h2>9.3 Webhook Payload Format</h2>
+
+<pre>{
+  "event_id": "evt_abc123",
+  "event_type": "payment.success",
+  "timestamp": "2024-01-15T10:31:00Z",
+  "environment": "production",
+  "transaction_reference": "BSC-20240115-123456-A1B2",
+  "transaction_id": "uuid",
+  "status": "success",
+  "partner_code": "lumiq",
+  "amount": 500.00,
+  "currency": "USD",
+  "fee": 2.50,
+  "user_identifier": "alex99"
+}</pre>
+
+<div class="section-break"></div>
+
+<!-- Section 10 -->
+<h1>10. Background Jobs</h1>
+
+<p>Celery workers handle these periodic tasks:</p>
+
+<table>
+    <tr><th>Task</th><th>Schedule</th><th>Purpose</th></tr>
+    <tr><td><code>poll_pending_transactions</code></td><td>Every 30s</td><td>Poll providers for status updates</td></tr>
+    <tr><td><code>process_pending_webhooks</code></td><td>Every 15s</td><td>Deliver queued webhook notifications</td></tr>
+    <tr><td><code>cleanup_old_records</code></td><td>Hourly</td><td>Remove old logs (90+ days)</td></tr>
+    <tr><td><code>unlock_expired_funds</code></td><td>On demand</td><td>Release stuck fund locks</td></tr>
+</table>
+
+<div class="section-break"></div>
+
+<!-- Section 11 -->
+<h1>11. Deployment Guide</h1>
+
+<h2>11.1 Docker Compose (Recommended)</h2>
+
+<pre># Start the full stack
+docker-compose up -d
+
+# Run migrations
+docker-compose exec api alembic upgrade head
+
+# Seed partners
+docker-compose exec api python scripts/seed_data.tsb</pre>
+
+<h2>11.2 Services</h2>
+
+<table>
+    <tr><th>Service</th><th>Port</th><th>Description</th></tr>
+    <tr><td>api</td><td>8000</td><td>FastAPI application server</td></tr>
+    <tr><td>postgres</td><td>5432</td><td>PostgreSQL database</td></tr>
+    <tr><td>redis</td><td>6379</td><td>Redis cache and queue</td></tr>
+    <tr><td>celery-worker</td><td>-</td><td>Background job processor</td></tr>
+    <tr><td>celery-beat</td><td>-</td><td>Job scheduler</td></tr>
+</table>
+
+<h2>11.3 Local Development</h2>
+
+<pre># Install dependencies
+pip install -r requirements.txt
+
+# Setup database
+alembic upgrade head
+
+# Start API
+python main.tsb
+
+# Start Celery (separate terminal)
+celery -A app.celery_tasks.config worker -l info
+celery -A app.celery_tasks.config beat -l info</pre>
+
+<div class="section-break"></div>
+
+<!-- Section 12 -->
+<h1>12. Environment Configuration</h1>
+
+<p>Copy <code>.env.example</code> to <code>.env</code> and configure:</p>
+
+<table>
+    <tr><th>Variable</th><th>Required</th><th>Default</th></tr>
+    <tr><td><code>DATABASE_URL</code></td><td>Yes</td><td>postgresql+asyncpg://...</td></tr>
+    <tr><td><code>REDIS_URL</code></td><td>Yes</td><td>redis://localhost:6379/0</td></tr>
+    <tr><td><code>JWT_SECRET</code></td><td>Yes</td><td>-</td></tr>
+    <tr><td><code>SECRET_KEY</code></td><td>Yes</td><td>-</td></tr>
+    <tr><td><code>LUMIQ_API_KEY</code></td><td>For Lumiq</td><td>-</td></tr>
+    <tr><td><code>HFM_API_KEY</code></td><td>For HFM</td><td>-</td></tr>
+    <tr><td><code>NOVAPAY_API_KEY</code></td><td>For NovaPay</td><td>-</td></tr>
+    <tr><td><code>CELERY_BROKER_URL</code></td><td>Yes</td><td>redis://localhost:6379/1</td></tr>
+</table>
+
+<div class="section-break"></div>
+
+<!-- Section 13 -->
+<h1>13. Security Considerations</h1>
+
+<h2>13.1 Implemented Security Measures</h2>
+
+<ul>
+    <li><strong>JWT Authentication</strong> - Short-lived access tokens (15 min) with refresh tokens</li>
+    <li><strong>Transaction PIN</strong> - Separate 4-6 digit PIN, bcrypt hashed</li>
+    <li><strong>HMAC Signatures</strong> - All provider requests signed, webhooks verified</li>
+    <li><strong>Rate Limiting</strong> - Redis-based sliding window (100 req/min default)</li>
+    <li><strong>Replay Protection</strong> - Webhook timestamp tolerance prevents replay attacks</li>
+    <li><strong>API Key Security</strong> - SHA-256 hashed secrets, never stored plaintext</li>
+    <li><strong>IP Whitelist</strong> - Per-API-key IP restrictions</li>
+    <li><strong>Audit Logging</strong> - All actions logged with before/after state</li>
+    <li><strong>Fund Safety</strong> - Atomic operations, never deduct before confirmation</li>
+    <li><strong>Distributed Locks</strong> - Prevent double-spending race conditions</li>
+</ul>
+
+<h2>13.2 Security Best Practices</h2>
+
+<div class="warning">
+    <div class="warning-title">Production Checklist</div>
+    <ul>
+        <li>Change all default secrets in .env</li>
+        <li>Enable HTTPS only (no HTTP in production)</li>
+        <li>Restrict CORS origins (don't use "*")</li>
+        <li>Run database migrations before starting</li>
+        <li>Monitor Celery worker health</li>
+        <li>Enable database backups</li>
+        <li>Set up log aggregation</li>
+    </ul>
+</div>
+
+<div class="section-break"></div>
+
+<!-- Summary -->
+<h1>Summary</h1>
+
+<p>BlueSea Connect is a production-ready fintech gateway built for scalability, security, and reliability. The architecture ensures:</p>
+
+<ul>
+    <li><strong>Frontend isolation</strong> from provider APIs</li>
+    <li><strong>Safe transaction processing</strong> with fund locking</li>
+    <li><strong>Comprehensive audit trail</strong> for all operations</li>
+    <li><strong>Extensible provider system</strong> for adding new partners</li>
+    <li><strong>Reliable webhook delivery</strong> with retry logic</li>
+    <li><strong>Background job processing</strong> for async operations</li>
+</ul>
+
+<p>The codebase is organized into clear modules following the dependency inversion principle - the core business logic (services) is independent of HTTP transport (routes) and external providers (adapters).</p>
+
+<div class="note">
+    <div class="note-title">Getting Started</div>
+    Run <code>./rename.sh</code> to convert .tsb files to .py, then <code>docker-compose up -d</code> to start the full stack. Visit <code>http://localhost:8000/health</code> to verify.
+</div>
+
+</body>
+</html>
